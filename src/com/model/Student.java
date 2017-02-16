@@ -22,7 +22,7 @@ public class Student {
 	}
 	
 	public enum Type{
-		KINDERGARDEN, HIGHSCHOOL, UNIVERTITY;
+		KINDERGARDEN, HIGHSCHOOL, UNIVERSITY;
 		
 		public static Type getType(String type){
 			if(type.equalsIgnoreCase("kindergarden")){
@@ -32,7 +32,7 @@ public class Student {
 				return HIGHSCHOOL;
 			}
 			if(type.equalsIgnoreCase("univertity")){
-				return UNIVERTITY;
+				return UNIVERSITY;
 			}
 			return null;
 		}
@@ -76,5 +76,9 @@ public class Student {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String toString(){
+		return "id="+id.toString()+" name="+name.toString()+" gender="+gender.toString()+" type="+type.toString()+" timestamp="+timestamp.toString();
 	}
 }

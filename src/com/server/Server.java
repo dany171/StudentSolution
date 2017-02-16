@@ -14,23 +14,23 @@ import com.server.data.FileDataServiceInjector;
 public class Server {
 	
 	private static int port = 6789;
-
-	DataManager dataManager;
+	private static boolean active = true;
+	CommandExecutor dataManager;
+	
 	public static void main(String[] args) throws IOException {
 		{
 			DataServiceInjector injector = null;
-			DataManager dataManager = null;
+			CommandExecutor executor = null;
 			
 			injector = new FileDataServiceInjector();
-			dataManager = (DataManager) injector.getConsumer();
-			dataManager.setStudentSearchService(new BasicStudentSearchService());
+			executor = (CommandExecutor) injector.getConsumer();
+			executor.setStudentSearchService(new BasicStudentSearchService());
 			
 			String clientCommand;
-			String capitalizedSentence;
-			ServerSocket welcomeSocket = new ServerSocket(port);
+			ServerSocket clientSocket = new ServerSocket(port);
 
-			while (true) {
-				Socket connectionSocket = welcomeSocket.accept();
+			while (active) {
+				Socket connectionSocket = clientSocket.accept();
 				BufferedReader inFromClient = new BufferedReader(
 						new InputStreamReader(connectionSocket.getInputStream()));
 
@@ -38,12 +38,13 @@ public class Server {
 						connectionSocket.getOutputStream());
 
 				clientCommand = inFromClient.readLine();
-				String commandResponse = dataManager.query(clientCommand);
-				System.out.println("Received: " + clientCommand);
+				String commandResponse = executor.execute(clientCommand);
+				System.out.println("Received: " + clientCommand+" - Command executed");
 				
 				outToClient.writeBytes(commandResponse+'\n');
 				connectionSocket.close();
 			}
+			clientSocket.close();
 		}
 	}
 

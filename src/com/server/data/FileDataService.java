@@ -11,7 +11,7 @@ public class FileDataService implements DataService{
 	HashMap<Long, Student> students = new HashMap<Long,Student>();
 	Long lastId = 1L;
 	@Override
-	public void save(Student student) {
+	public Student save(Student student) {
 		if(students.isEmpty()){
 			student.setId(lastId);
 		}else{
@@ -22,13 +22,16 @@ public class FileDataService implements DataService{
 		student.setTimestamp(d.getTime());
 		students.put(student.getId(),student);
 		System.out.println("user saved");
+		return student;		
 	}
 
 	@Override
-	public void update(Student student) {
+	public Student update(Student student) {
+		Date d = new Date();
+		student.setTimestamp(d.getTime());
 		students.put(student.getId(), student);
 		System.out.println("user updated");		
-		
+		return student;
 	}
 
 	@Override

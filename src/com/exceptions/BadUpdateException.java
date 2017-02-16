@@ -15,4 +15,9 @@ public class BadUpdateException extends Exception{
 	{
 		super(message, cause);
 	}	
+	
+	public BadUpdateException(String message)
+	{
+		super(message);
+	}
 }
