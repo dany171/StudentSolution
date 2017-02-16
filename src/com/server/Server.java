@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.search.BasicStudentSearchService;
 import com.server.data.DataServiceInjector;
 import com.server.data.FileDataServiceInjector;
 
@@ -22,6 +23,7 @@ public class Server {
 			
 			injector = new FileDataServiceInjector();
 			dataManager = (DataManager) injector.getConsumer();
+			dataManager.setStudentSearchService(new BasicStudentSearchService());
 			
 			String clientCommand;
 			String capitalizedSentence;
@@ -36,11 +38,10 @@ public class Server {
 						connectionSocket.getOutputStream());
 
 				clientCommand = inFromClient.readLine();
-				dataManager.query(clientCommand);
+				String commandResponse = dataManager.query(clientCommand);
 				System.out.println("Received: " + clientCommand);
-
-				capitalizedSentence = clientCommand.toUpperCase() + '\n';
-				outToClient.writeBytes(capitalizedSentence);
+				
+				outToClient.writeBytes(commandResponse+'\n');
 				connectionSocket.close();
 			}
 		}

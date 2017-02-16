@@ -1,22 +1,38 @@
 package com.server.data;
 
+import java.util.Date;
+import java.util.HashMap;
+
 import com.model.Student;
 
 public class FileDataService implements DataService{
 
+	
+	HashMap<Long, Student> students = new HashMap<Long,Student>();
+	Long lastId = 1L;
 	@Override
 	public void save(Student student) {
+		if(students.isEmpty()){
+			student.setId(lastId);
+		}else{
+			lastId++;
+			student.setId(lastId);
+		}
+		Date d = new Date();
+		student.setTimestamp(d.getTime());
+		students.put(student.getId(),student);
 		System.out.println("user saved");
-	}
-
-	@Override
-	public void delete(Student student) {
-		System.out.println("user deleted");		
 	}
 
 	@Override
 	public void update(Student student) {
 		System.out.println("user updated");		
 		
+	}
+
+	@Override
+	public void delete(Long id) {
+		students.remove(id);
+		System.out.println("User deleted");
 	}	
 }

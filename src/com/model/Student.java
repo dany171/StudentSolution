@@ -1,6 +1,7 @@
 package com.model;
 
 public class Student {
+	private Long id;
 	private String name;
 	private Gender gender;
 	private Type type;
@@ -10,10 +11,10 @@ public class Student {
 		MALE, FEMALE;
 		
 		public static Gender getGender(String gender){
-			if(gender=="male"){
+			if(gender.equalsIgnoreCase("male")){
 				return MALE;
 			}
-			if(gender=="female"){
+			if(gender.equalsIgnoreCase("female")){
 				return FEMALE;
 			}
 			return null;
@@ -24,13 +25,13 @@ public class Student {
 		KINDERGARDEN, HIGHSCHOOL, UNIVERTITY;
 		
 		public static Type getType(String type){
-			if(type=="kindergarden"){
+			if(type.equalsIgnoreCase("kindergarden")){
 				return KINDERGARDEN;
 			}
-			if(type=="HIGHSCHOOL"){
+			if(type.equalsIgnoreCase("highschool")){
 				return HIGHSCHOOL;
 			}
-			if(type=="univertity"){
+			if(type.equalsIgnoreCase("univertity")){
 				return UNIVERTITY;
 			}
 			return null;
@@ -67,5 +68,13 @@ public class Student {
 
 	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }
