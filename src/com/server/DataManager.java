@@ -2,6 +2,7 @@ package com.server;
 
 import com.exceptions.BadDeleteException;
 import com.exceptions.BadStudentException;
+import com.exceptions.BadUpdateException;
 import com.model.Student;
 import com.search.StudentSearchService;
 import com.server.data.Consumer;
@@ -44,6 +45,13 @@ public class DataManager implements Consumer{
 				
 				break;
 			case "update":
+				try {
+					student = updateUserParser(query);
+					processUpdate(student);
+					res = "Student Updated";
+				} catch (BadUpdateException e) {
+					return e.toString()+": id or student details incorrect";
+				}			
 				/*student = createUser(query);
 				dataService.update(student);*/
 				break;
@@ -84,7 +92,23 @@ public class DataManager implements Consumer{
 		
 		return student;
 		
-	}	
+	}
+	
+	private Student updateUserParser(String text) throws BadUpdateException{
+		try{
+			String[] words = text.split(" ");
+			String[] idArray = words[1].split("=");
+		
+			Long id = new Long(idArray[1]);
+			
+			Student student = createUser(text);
+			student.setId(id);
+			
+			return student;
+		}catch(Exception e){
+			throw new BadUpdateException(e);
+		}
+	}
 	
 	private Long deleteUserParser(String text) throws BadDeleteException{
 		try{	

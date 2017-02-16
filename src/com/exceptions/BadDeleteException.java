@@ -6,4 +6,14 @@ public class BadDeleteException  extends Exception{
 
 	public BadDeleteException(){}
 	
+	public BadDeleteException(Throwable cause)
+	{
+		super(cause);
+	}
+	
+	public BadDeleteException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}	
+	
 }

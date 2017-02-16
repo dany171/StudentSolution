@@ -26,6 +26,7 @@ public class FileDataService implements DataService{
 
 	@Override
 	public void update(Student student) {
+		students.put(student.getId(), student);
 		System.out.println("user updated");		
 		
 	}
