@@ -105,6 +105,8 @@ Technical details
 
 -Timestamp format pending.
 
+-Note, it could be more robust, but for exercise purposes I made it with lower of validations and exception handling
+
 
 
 
