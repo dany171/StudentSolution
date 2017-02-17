@@ -21,9 +21,8 @@ public class BasicStudentSearchService implements StudentSearchService {
 	}
 
 	@Override
-	public Collection<Student> searchByGender(Gender gender,
-			Map<Gender, Collection<Student>> studentsByGender) {
-		return studentsByGender.get(gender);
+	public Collection<Student> searchByGender(Gender gender, PropertyTypeMap<Gender> studentsByGender) {
+		return studentsByGender.getPropertyCollection(gender);
 	}
 
 }

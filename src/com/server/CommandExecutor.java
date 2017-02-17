@@ -267,8 +267,8 @@ public class CommandExecutor implements Consumer{
 		
 	}
 		
-	public Collection<Student> processSearchByGender(Gender gender, Map<Gender,Collection<Student>> studentsByGender) {
-		return searchService.searchByGender(gender , studentsByGender);		
+	public Collection<Student> processSearchByGender(Gender gender, PropertyTypeMap<Gender> studentsByGender) {
+		return searchService.searchByGender(gender, studentsByGender);		
 	}
 	
 	public Collection<Student> processSearchByType(Type gender, PropertyTypeMap<Type> studentsByTypes) {

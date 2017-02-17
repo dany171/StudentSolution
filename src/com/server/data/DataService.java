@@ -15,6 +15,6 @@ public interface DataService {
 	public boolean persist(String filename);
 	public boolean load(String filename);
 	public Map<String,Student> getStudentsByName();
-	public Map<Gender,Collection<Student>> getStudentsByGender();
+	public PropertyTypeMap<Gender> getStudentsByGender();
 	public PropertyTypeMap<Type> getStudentsByType(); 
 }

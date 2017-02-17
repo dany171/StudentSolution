@@ -11,5 +11,5 @@ import com.server.data.PropertyTypeMap;
 public interface StudentSearchService {
 	public Student searchByName(String name, Map<String,Student> studentsByName);
 	public Collection<Student> searchByType(Type type, PropertyTypeMap<Type> studentsByType);
-	public Collection<Student> searchByGender(Gender gender,Map<Gender,Collection<Student>> studentsByGender);
+	public Collection<Student> searchByGender(Gender gender, PropertyTypeMap<Gender> studentsByGender);
 }

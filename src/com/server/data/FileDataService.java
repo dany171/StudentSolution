@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,15 +22,7 @@ public class FileDataService implements DataService{
 	
 	Map<String, Student> byName;
 	
-	Collection<Student> males;
-	Collection<Student> females;
-
-	Collection<Student> elementary;
-	Collection<Student> kindergarden;
-	Collection<Student> highschool;
-	Collection<Student> university;
-	
-	Map<Gender,Collection<Student>> byGender;
+	PropertyTypeMap<Gender> byGender;
 	
 	PropertyTypeMap<Type> byType;
 	
@@ -40,15 +31,9 @@ public class FileDataService implements DataService{
 	public FileDataService(){
 		students = new HashMap<Long,Student>();
 		byName = new HashMap<String,Student>();
-		males = new ArrayList<Student>();
-		females = new ArrayList<Student>();
-		byGender = new HashMap<Gender,Collection<Student>>();
-		
-		byGender.put(Gender.MALE, males);
-		byGender.put(Gender.FEMALE, females);
-		
-		byType= new PropertyTypeMap<Type>();
 				
+		byType = new PropertyTypeMap<Type>();
+		byGender= new PropertyTypeMap<Gender>();		
 	}
 	
 	@Override
@@ -60,21 +45,19 @@ public class FileDataService implements DataService{
 			student.setId(lastId);
 		}
 		Date d = new Date();
+		
 		student.setTimestamp(d.getTime());
 		
 		students.put(student.getId(),student);
-		byName.put(student.getName(),student);
-		//gender
-		if(student.getGender()==Gender.MALE){
-			males.add(student);
-		}else{
-			females.add(student);
-		}	
 		
-		//type
+		byName.put(student.getName(),student);
+		
+		byGender.put(student, student.getGender());	
+				
 		byType.put(student, student.getType());
 		
 		System.out.println("user saved");
+		
 		return student;		
 	}
 
@@ -87,24 +70,7 @@ public class FileDataService implements DataService{
 		byName.put(student.getName(),student);
 		
 		//gender
-		Student oldStudent = students.get(student.getId());
-		if(oldStudent.getGender()==student.getGender()){
-			if(student.getGender()==Gender.MALE){
-				males.remove(oldStudent);
-				males.add(student);
-			}else{
-				females.remove(oldStudent);
-				females.add(student);
-			}	
-		}else{
-			if(student.getGender()==Gender.MALE){
-				females.remove(oldStudent);
-				males.add(student);
-			}else{
-				males.remove(oldStudent);
-				females.add(student);
-			}
-		}
+		byGender.update(student, student.getGender());
 		
 		//type
 		byType.update(student, student.getType());
@@ -117,17 +83,13 @@ public class FileDataService implements DataService{
 	public void delete(Long id) {
 		
 		Student student = students.get(id);
+
 		byName.remove(student.getName());
 		
 		students.remove(id);
 				
-		if(student.getGender()==Gender.MALE){
-			males.remove(student);
-		}else{
-			females.remove(student);
-		}	
-		
-		//type
+		byGender.delete(student.getId());	
+
 		byType.delete(student.getId());
 		
 		System.out.println("User deleted");
@@ -150,7 +112,7 @@ public class FileDataService implements DataService{
 		return byName;		
 	}
 	
-	public Map<Gender,Collection<Student>> getStudentsByGender(){
+	public PropertyTypeMap<Gender> getStudentsByGender(){
 		return byGender;
 	}
 	
@@ -211,20 +173,14 @@ public class FileDataService implements DataService{
 	                student.setTimestamp(timestamp);
 
 	                students.put(student.getId(),student);
-	        		byName.put(student.getName(),student);
-	        		//gender
-	        		if(student.getGender()==Gender.MALE){
-	        			males.add(student);
-	        		}else{
-	        			females.add(student);
-	        		}	
+
+	                byName.put(student.getName(),student);
 	        		
-	        		//type
+	        		byGender.put(student, student.getGender());	
+	        		
 	        		byType.put(student, student.getType());
 	        		
-	        		if(id>lastId){
-	        			lastId = id;
-	        		}
+	        		if(id>lastId){ lastId = id; }
 	        		
 	        		res = true;
 	            }
