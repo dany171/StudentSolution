@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.model.Student;
 import com.model.Student.Gender;
+import com.model.Student.Type;
 
 public class FileDataService implements DataService{
 
@@ -24,8 +25,18 @@ public class FileDataService implements DataService{
 	
 	Collection<Student> males;
 	Collection<Student> females;
+
+	Collection<Student> elementary;
+	Collection<Student> kindergarden;
+	Collection<Student> highschool;
+	Collection<Student> university;
+	
 	Map<Gender,Collection<Student>> byGender;
 	
+	PropertyTypeMap<Type> byType;
+	
+	
+
 	public FileDataService(){
 		students = new HashMap<Long,Student>();
 		byName = new HashMap<String,Student>();
@@ -35,6 +46,9 @@ public class FileDataService implements DataService{
 		
 		byGender.put(Gender.MALE, males);
 		byGender.put(Gender.FEMALE, females);
+		
+		byType= new PropertyTypeMap<Type>();
+				
 	}
 	
 	@Override
@@ -55,7 +69,10 @@ public class FileDataService implements DataService{
 			males.add(student);
 		}else{
 			females.add(student);
-		}		 
+		}	
+		
+		//type
+		byType.put(student, student.getType());
 		
 		System.out.println("user saved");
 		return student;		
@@ -89,6 +106,9 @@ public class FileDataService implements DataService{
 			}
 		}
 		
+		//type
+		byType.update(student, student.getType());
+		
 		System.out.println("user updated");		
 		return student;
 	}
@@ -106,6 +126,9 @@ public class FileDataService implements DataService{
 		}else{
 			females.remove(student);
 		}	
+		
+		//type
+		byType.delete(student.getId());
 		
 		System.out.println("User deleted");
 	}	
@@ -129,6 +152,14 @@ public class FileDataService implements DataService{
 	
 	public Map<Gender,Collection<Student>> getStudentsByGender(){
 		return byGender;
+	}
+	
+	public PropertyTypeMap<Type> getStudentsByType() {
+		return byType;
+	}
+
+	public void setStudentsByType(PropertyTypeMap<Type> byType) {
+		this.byType = byType;
 	}
 
 	@Override
@@ -187,6 +218,9 @@ public class FileDataService implements DataService{
 	        		}else{
 	        			females.add(student);
 	        		}	
+	        		
+	        		//type
+	        		byType.put(student, student.getType());
 	        		
 	        		if(id>lastId){
 	        			lastId = id;

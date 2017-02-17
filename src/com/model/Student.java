@@ -31,7 +31,7 @@ public class Student {
 	}
 	
 	public enum Type{
-		KINDERGARDEN, HIGHSCHOOL, UNIVERSITY;
+		KINDERGARDEN, ELEMENTARY, HIGHSCHOOL, UNIVERSITY;
 		
 		public static Type getType(String type){
 			if(type.equalsIgnoreCase("kindergarden")){
@@ -42,6 +42,9 @@ public class Student {
 			}
 			if(type.equalsIgnoreCase("university")){
 				return UNIVERSITY;
+			}
+			if(type.equalsIgnoreCase("elementary")){
+				return ELEMENTARY;
 			}
 			return null;
 		}

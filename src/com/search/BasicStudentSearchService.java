@@ -6,19 +6,18 @@ import java.util.Map;
 import com.model.Student;
 import com.model.Student.Gender;
 import com.model.Student.Type;
+import com.server.data.PropertyTypeMap;
 
 public class BasicStudentSearchService implements StudentSearchService {
 
 	@Override
 	public Student searchByName(String name,Map<String, Student> studentsByName) {
-	
 		return studentsByName.get(name);
 	}
 
 	@Override
-	public Student[] searchByType(Type type) {
-		System.out.println("searchByType");
-		return null;
+	public Collection<Student> searchByType(Type type, PropertyTypeMap<Type> studentsByType) {
+		return studentsByType.getPropertyCollection(type);
 	}
 
 	@Override

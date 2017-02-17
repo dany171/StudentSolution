@@ -15,6 +15,7 @@ import com.model.Student.Type;
 import com.search.StudentSearchService;
 import com.server.data.Consumer;
 import com.server.data.DataService;
+import com.server.data.PropertyTypeMap;
 
 public class CommandExecutor implements Consumer{
 
@@ -50,6 +51,9 @@ public class CommandExecutor implements Consumer{
 			if(cmd==Command.SEARCH_BY_GENDER){
 				return executeSearchByGender(cmd);
 			}else
+			if(cmd==Command.SEARCH_BY_TYPE){
+				return executeSearchByType(cmd);
+			}
 			if(cmd==Command.EXIT){
 				return executeExit(cmd);
 			}
@@ -195,6 +199,31 @@ public class CommandExecutor implements Consumer{
 		
 	}
 	
+	private String executeSearchByType(Command cmd) throws BadSearchException{
+		
+		HashMap<String,String> options = cmd.getOptions();
+		String type = options.get("type");
+		
+		if( "type"==null ){ 
+			throw new BadSearchException("Missing type option");
+		}	
+
+		try{
+			
+			Collection<Student> students= processSearchByType(Type.getType(type), 
+					dataService.getStudentsByType());
+			if(students==null || students.isEmpty()){
+				return "No students found";
+			}else{
+				return students.toString();
+			}
+			
+		}catch(Exception e){
+			throw new BadSearchException("Error while searching by gender",e);
+		}		
+		
+	}
+	
 	public String executeExit(Command cmd){
 		
 		HashMap<String,String> options = cmd.getOptions();
@@ -242,6 +271,10 @@ public class CommandExecutor implements Consumer{
 		return searchService.searchByGender(gender , studentsByGender);		
 	}
 	
+	public Collection<Student> processSearchByType(Type gender, PropertyTypeMap<Type> studentsByTypes) {
+		return searchService.searchByType(gender , studentsByTypes);		
+	}
+	
 	public boolean processExit(String filename){
 		return dataService.persist(filename);
 	}
@@ -282,7 +315,7 @@ public class CommandExecutor implements Consumer{
 	}
 	
 	private enum Command{
-		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER, EXIT;
+		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER,SEARCH_BY_TYPE , EXIT;
 		
 		private HashMap<String,String> options;		
 		
@@ -310,6 +343,10 @@ public class CommandExecutor implements Consumer{
 				}else
 				if(opts.get("gender")!=null){
 					cmd = Command.SEARCH_BY_GENDER;
+					cmd.setOptions(opts);
+				}else
+				if(opts.get("type")!=null){
+					cmd = Command.SEARCH_BY_TYPE;
 					cmd.setOptions(opts);
 				}
 				/*if(opts.get("type")!=null || opts.get("gender")!=null){
