@@ -31,7 +31,7 @@ public class Student {
 			if(type.equalsIgnoreCase("highschool")){
 				return HIGHSCHOOL;
 			}
-			if(type.equalsIgnoreCase("univertity")){
+			if(type.equalsIgnoreCase("university")){
 				return UNIVERSITY;
 			}
 			return null;

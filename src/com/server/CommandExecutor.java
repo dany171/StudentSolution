@@ -1,8 +1,10 @@
 package com.server;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.exceptions.BadDeleteException;
+import com.exceptions.BadSearchException;
 import com.exceptions.BadStudentException;
 import com.exceptions.BadUpdateException;
 import com.exceptions.ParseCommandException;
@@ -37,6 +39,9 @@ public class CommandExecutor implements Consumer{
 			}else
 			if(cmd==Command.DELETE){
 				return executeDeleteStudent(cmd);
+			}else
+			if(cmd==Command.SEARCH_BY_NAME){
+				return executeSearchByName(cmd);
 			}
 		
 		}catch(ParseCommandException pe){
@@ -47,8 +52,10 @@ public class CommandExecutor implements Consumer{
 			return bue.getMessage();
 		}catch(BadDeleteException bde){
 			return bde.getMessage();
+		} catch (BadSearchException se) {
+			return se.getMessage();
 		}finally{
-			System.out.println("Error processing message");
+			//System.out.println("Error processing message");
 		}
 		return "No command foud";		
 				
@@ -129,6 +136,30 @@ public class CommandExecutor implements Consumer{
 		}
 	}
 	
+	private String executeSearchByName(Command cmd) throws BadSearchException{
+		
+		HashMap<String,String> options = cmd.getOptions();
+		String name = options.get("name");
+		
+		if( name==null ){ 
+			throw new BadSearchException("Missing name option");
+		}	
+
+		try{
+			
+			Student student = processSearchByName(name, dataService.getStudentsByName());
+			if(student==null){
+				return "Student not found";
+			}else{
+				return student.toString();
+			}
+			
+		}catch(Exception e){
+			throw new BadSearchException("Error while searching by name",e);
+		}		
+		
+	}
+	
 	@Override
 	public Student processSave(Student student) {
 		return dataService.save(student);		
@@ -148,12 +179,11 @@ public class CommandExecutor implements Consumer{
 		this.searchService = sss;
 	}
 
-/*	@Override
-	public void processSearchByName(String name) {
-		searchService.searchByName(name);
+	public Student processSearchByName(String name, Map<String,Student> studentsByName) {
+		return searchService.searchByName(name, studentsByName);
 		
 	}
-
+/*
 	@Override
 	public void processSearchByType(Type type) {
         searchService.searchByType(type);
@@ -193,7 +223,7 @@ public class CommandExecutor implements Consumer{
 	}
 	
 	private enum Command{
-		CREATE, UPDATE, DELETE;
+		CREATE, UPDATE, DELETE, SEARCH_BY_NAME;
 		
 		private HashMap<String,String> options;		
 		
@@ -213,6 +243,15 @@ public class CommandExecutor implements Consumer{
 			if(text.equalsIgnoreCase("delete")){
 				cmd = Command.DELETE;
 				cmd.setOptions(opts);
+			}else
+			if(text.equalsIgnoreCase("search")){
+				if(opts.get("name")!=null){
+					cmd = Command.SEARCH_BY_NAME;
+					cmd.setOptions(opts);
+				}/*else
+				if(opts.get("type")!=null || opts.get("gender")!=null){
+					cmd = Command.SEARCH_BY_TYPE_AND
+				}*/
 			}
 			return cmd;
 		}
