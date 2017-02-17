@@ -1,5 +1,6 @@
 package com.search;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -24,5 +25,26 @@ public class BasicStudentSearchService implements StudentSearchService {
 	public Collection<Student> searchByGender(Gender gender, PropertyTypeMap<Gender> studentsByGender) {
 		return studentsByGender.getPropertyCollection(gender);
 	}
+
+	@Override
+	public Collection<Student> searchByTypeAndGender(Type type, Gender gender,
+			PropertyTypeMap<Type> studentsByType,
+			PropertyTypeMap<Gender> studentsByGender) {
+		
+		Collection<Student> byType = studentsByType.getPropertyCollection(type);
+		Collection<Student> byGender = studentsByGender.getPropertyCollection(gender);
+		
+		Collection<Student> res = new ArrayList<Student>();
+		
+		for (Student s : byType) {
+		   if(byGender.contains(s)) {
+		       res.add(s);
+		   }
+		}
+		
+		return res;
+	}
+
+	
 
 }

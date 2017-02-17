@@ -48,6 +48,9 @@ public class CommandExecutor implements Consumer{
 			if(cmd==Command.SEARCH_BY_NAME){
 				return executeSearchByName(cmd);
 			}else
+			if(cmd==Command.SEARCH_BY_TYPE_AND_GENDER){
+				return executeSearchByTypeAndGender(cmd);
+			}
 			if(cmd==Command.SEARCH_BY_GENDER){
 				return executeSearchByGender(cmd);
 			}else
@@ -179,7 +182,7 @@ public class CommandExecutor implements Consumer{
 		HashMap<String,String> options = cmd.getOptions();
 		String gender = options.get("gender");
 		
-		if( "gender"==null ){ 
+		if( gender==null ){ 
 			throw new BadSearchException("Missing gender option");
 		}	
 
@@ -204,7 +207,7 @@ public class CommandExecutor implements Consumer{
 		HashMap<String,String> options = cmd.getOptions();
 		String type = options.get("type");
 		
-		if( "type"==null ){ 
+		if( type==null ){ 
 			throw new BadSearchException("Missing type option");
 		}	
 
@@ -220,6 +223,38 @@ public class CommandExecutor implements Consumer{
 			
 		}catch(Exception e){
 			throw new BadSearchException("Error while searching by gender",e);
+		}		
+		
+	}
+	
+	private String executeSearchByTypeAndGender(Command cmd) throws BadSearchException{
+		
+		HashMap<String,String> options = cmd.getOptions();
+		String type = options.get("type");
+		String gender = options.get("gender");
+		
+		if( type==null ){ 
+			throw new BadSearchException("Missing type option");
+		}
+		if( gender==null ){ 
+			throw new BadSearchException("Missing gender option");
+		}
+		
+
+		try{
+			
+			Collection<Student> students= processSearchByTypeAndGender(Type.getType(type),
+					Gender.getGender(gender),
+					dataService.getStudentsByType(),
+					dataService.getStudentsByGender());
+			if(students==null || students.isEmpty()){
+				return "No students found";
+			}else{
+				return students.toString();
+			}
+			
+		}catch(Exception e){
+			throw new BadSearchException("Error while searching by type and gender",e);
 		}		
 		
 	}
@@ -271,21 +306,22 @@ public class CommandExecutor implements Consumer{
 		return searchService.searchByGender(gender, studentsByGender);		
 	}
 	
-	public Collection<Student> processSearchByType(Type gender, PropertyTypeMap<Type> studentsByTypes) {
-		return searchService.searchByType(gender , studentsByTypes);		
+	public Collection<Student> processSearchByType(Type type, PropertyTypeMap<Type> studentsByTypes) {
+		return searchService.searchByType(type , studentsByTypes);		
 	}
+	
+	public Collection<Student> processSearchByTypeAndGender(
+			Type type, 
+			Gender gender, 
+			PropertyTypeMap<Type> studentsByTypes,
+			PropertyTypeMap<Gender> studentsByGender) {
+		
+		return searchService.searchByTypeAndGender(type, gender, studentsByTypes, studentsByGender);		
+	}	
 	
 	public boolean processExit(String filename){
 		return dataService.persist(filename);
 	}
-/*
-	@Override
-	public void processSearchByType(Type type) {
-        searchService.searchByType(type);
-		
-	}
-
-	*/
 	
 	private Command parseCommand(String text) throws ParseCommandException{
 		
@@ -315,7 +351,7 @@ public class CommandExecutor implements Consumer{
 	}
 	
 	private enum Command{
-		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER,SEARCH_BY_TYPE , EXIT;
+		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER,SEARCH_BY_TYPE, SEARCH_BY_TYPE_AND_GENDER, EXIT;
 		
 		private HashMap<String,String> options;		
 		
@@ -337,6 +373,10 @@ public class CommandExecutor implements Consumer{
 				cmd.setOptions(opts);
 			}else
 			if(text.equalsIgnoreCase("search")){
+				if(opts.get("type")!=null && opts.get("gender")!=null){
+					cmd = Command.SEARCH_BY_TYPE_AND_GENDER;
+					cmd.setOptions(opts);
+				}else
 				if(opts.get("name")!=null){
 					cmd = Command.SEARCH_BY_NAME;
 					cmd.setOptions(opts);
