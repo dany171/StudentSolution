@@ -23,7 +23,9 @@ public class CommandExecutor implements Consumer{
 	private String filename = "input.csv";
 	
 	public CommandExecutor(DataService dataService){
-		this.dataService = dataService;		
+		this.dataService = dataService;
+		boolean dataLoaded = this.dataService.load(filename);
+		System.out.println("load data: "+dataLoaded);
 	}
 	
 	public String execute(String command){

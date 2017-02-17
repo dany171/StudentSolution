@@ -12,6 +12,7 @@ public interface DataService {
 	public void delete(Long id);
 	public Student update(Student student);
 	public boolean persist(String filename);
+	public boolean load(String filename);
 	public Map<String,Student> getStudentsByName();
 	public Map<Gender,Collection<Student>> getStudentsByGender();
 }

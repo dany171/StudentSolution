@@ -1,5 +1,7 @@
 package com.server.data;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -16,15 +18,21 @@ public class FileDataService implements DataService{
 
 	Long lastId = 1L;
 	
-	Map<Long, Student> students = new HashMap<Long,Student>();
+	Map<Long, Student> students;
 	
-	Map<String, Student> byName = new HashMap<String,Student>();
+	Map<String, Student> byName;
 	
-	Collection<Student> males = new ArrayList<Student>();
-	Collection<Student> females = new ArrayList<Student>();
-	Map<Gender,Collection<Student>> byGender = new HashMap<Gender,Collection<Student>>();
+	Collection<Student> males;
+	Collection<Student> females;
+	Map<Gender,Collection<Student>> byGender;
 	
 	public FileDataService(){
+		students = new HashMap<Long,Student>();
+		byName = new HashMap<String,Student>();
+		males = new ArrayList<Student>();
+		females = new ArrayList<Student>();
+		byGender = new HashMap<Gender,Collection<Student>>();
+		
 		byGender.put(Gender.MALE, males);
 		byGender.put(Gender.FEMALE, females);
 	}
@@ -145,5 +153,51 @@ public class FileDataService implements DataService{
 		   res = false;
 		}
 		return res;
+	}
+
+	@Override
+	public boolean load(String filename) {
+		    String line = "";
+	        String cvsSplitBy = ",";
+	        boolean res = false;
+	        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+
+	            while ((line = br.readLine()) != null) {
+
+	                // use comma as separator
+	                String[] studentStr = line.split(cvsSplitBy);
+	                Long id = new Long(studentStr[0]);
+	                Student.Type type = Student.Type.getType(studentStr[1]);
+	                String name = studentStr[2];
+	                Student.Gender gender = Student.Gender.getGender(studentStr[3]);
+	                Long timestamp = new Long(studentStr[4]);
+	                
+	                Student student = new Student();
+	                student.setId(id);
+	                student.setType(type);
+	                student.setName(name);
+	                student.setGender(gender);
+	                student.setTimestamp(timestamp);
+
+	                students.put(student.getId(),student);
+	        		byName.put(student.getName(),student);
+	        		//gender
+	        		if(student.getGender()==Gender.MALE){
+	        			males.add(student);
+	        		}else{
+	        			females.add(student);
+	        		}	
+	        		
+	        		if(id>lastId){
+	        			lastId = id;
+	        		}
+	        		
+	        		res = true;
+	            }
+
+	        } catch (IOException e) {
+	            return false;
+	        }
+	        return res;
 	}	
 }

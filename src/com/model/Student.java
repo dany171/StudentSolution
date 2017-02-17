@@ -11,10 +11,10 @@ public class Student {
 		MALE, FEMALE;
 		
 		public static Gender getGender(String gender){
-			if(gender.equalsIgnoreCase("male")){
+			if(gender.equalsIgnoreCase("male") || gender.equalsIgnoreCase("m")){
 				return MALE;
 			}
-			if(gender.equalsIgnoreCase("female")){
+			if(gender.equalsIgnoreCase("female") || gender.equalsIgnoreCase("f")){
 				return FEMALE;
 			}
 			return null;
@@ -88,6 +88,6 @@ public class Student {
 	}
 	
 	public String toString(){
-		return id.toString()+", "+type.toString()+", "+name+", "+gender.toString()+", "+timestamp.toString();
+		return id.toString()+","+type.toString()+","+name+","+gender.toString()+","+timestamp.toString();
 	}
 }
