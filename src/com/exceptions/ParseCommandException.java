@@ -1,16 +1,17 @@
 package com.exceptions;
 
-public class ParseCommandException extends Exception{
+public class ParseCommandException extends Exception {
 	
-	public ParseCommandException(){}
-	
-	public ParseCommandException(Throwable cause)
-	{
+	private static final long serialVersionUID = 1L;
+
+	public ParseCommandException() {
+	}
+
+	public ParseCommandException(Throwable cause) {
 		super(cause);
 	}
-	
-	public ParseCommandException(String message, Throwable cause)
-	{
+
+	public ParseCommandException(String message, Throwable cause) {
 		super(message, cause);
-	}	
+	}
 }

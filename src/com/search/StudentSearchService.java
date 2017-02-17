@@ -21,6 +21,5 @@ public interface StudentSearchService {
 			Gender gender,
 			PropertyTypeMap<Type> studentsByType,
 			PropertyTypeMap<Gender> studentsByGender
-			);
-	
+	);	
 }

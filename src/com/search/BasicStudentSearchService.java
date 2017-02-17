@@ -12,17 +12,21 @@ import com.server.data.PropertyTypeMap;
 public class BasicStudentSearchService implements StudentSearchService {
 
 	@Override
-	public Student searchByName(String name,Map<String, Student> studentsByName) {
+	public Student searchByName(String name, Map<String, Student> studentsByName) {
 		return studentsByName.get(name);
 	}
 
 	@Override
-	public Collection<Student> searchByType(Type type, PropertyTypeMap<Type> studentsByType) {
+	public Collection<Student> searchByType(Type type,
+			PropertyTypeMap<Type> studentsByType) {
+		
 		return studentsByType.getPropertyCollection(type);
 	}
 
 	@Override
-	public Collection<Student> searchByGender(Gender gender, PropertyTypeMap<Gender> studentsByGender) {
+	public Collection<Student> searchByGender(Gender gender,
+			PropertyTypeMap<Gender> studentsByGender) {
+		
 		return studentsByGender.getPropertyCollection(gender);
 	}
 
@@ -30,21 +34,19 @@ public class BasicStudentSearchService implements StudentSearchService {
 	public Collection<Student> searchByTypeAndGender(Type type, Gender gender,
 			PropertyTypeMap<Type> studentsByType,
 			PropertyTypeMap<Gender> studentsByGender) {
-		
+
 		Collection<Student> byType = studentsByType.getPropertyCollection(type);
+		
 		Collection<Student> byGender = studentsByGender.getPropertyCollection(gender);
-		
+
 		Collection<Student> res = new ArrayList<Student>();
-		
+
 		for (Student s : byType) {
-		   if(byGender.contains(s)) {
-		       res.add(s);
-		   }
+			
+			if (byGender.contains(s)) { res.add(s); }
 		}
-		
+
 		return res;
 	}
-
-	
 
 }
