@@ -1,5 +1,7 @@
 package com.server.data;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -120,6 +122,28 @@ public class FileDataService implements DataService{
 	public Map<Gender,Collection<Student>> getStudentsByGender(){
 		return byGender;
 	}
-	
-	
+
+	@Override
+	public boolean persist(String filename) {
+		PrintWriter writer =null;
+		boolean res = false;
+		try{
+			Iterator<Student> i = students.values().iterator();
+			writer = new PrintWriter(filename, "UTF-8");
+			while(i.hasNext()){
+				
+			    writer.println(i.next().toString());
+			    
+			}
+			writer.close();
+			res = true;
+		} catch (IOException e) {
+		   System.out.println(e);
+		   if(writer!=null){
+			   writer.close();
+		   }
+		   res = false;
+		}
+		return res;
+	}	
 }

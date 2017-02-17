@@ -20,6 +20,7 @@ public class CommandExecutor implements Consumer{
 
 	private DataService dataService;
 	private StudentSearchService searchService;
+	private String filename = "input.csv";
 	
 	public CommandExecutor(DataService dataService){
 		this.dataService = dataService;		
@@ -46,6 +47,9 @@ public class CommandExecutor implements Consumer{
 			}else
 			if(cmd==Command.SEARCH_BY_GENDER){
 				return executeSearchByGender(cmd);
+			}else
+			if(cmd==Command.EXIT){
+				return executeExit(cmd);
 			}
 		
 		}catch(ParseCommandException pe){
@@ -189,6 +193,25 @@ public class CommandExecutor implements Consumer{
 		
 	}
 	
+	public String executeExit(Command cmd){
+		
+		HashMap<String,String> options = cmd.getOptions();
+		boolean persist = new Boolean(options.get("persist"));
+		
+		if(persist){
+			boolean exitSuccess = processExit(filename);
+			
+			if(exitSuccess){
+				return "All data persisted. bye";
+			}else{
+				return "Could not persist data. bye";
+			}
+		}else{
+			return "Ok, we are not saving anything! :) bye";
+		}
+		
+	}
+	
 	@Override
 	public Student processSave(Student student) {
 		return dataService.save(student);		
@@ -215,6 +238,10 @@ public class CommandExecutor implements Consumer{
 		
 	public Collection<Student> processSearchByGender(Gender gender, Map<Gender,Collection<Student>> studentsByGender) {
 		return searchService.searchByGender(gender , studentsByGender);		
+	}
+	
+	public boolean processExit(String filename){
+		return dataService.persist(filename);
 	}
 /*
 	@Override
@@ -253,7 +280,7 @@ public class CommandExecutor implements Consumer{
 	}
 	
 	private enum Command{
-		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER;
+		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER, EXIT;
 		
 		private HashMap<String,String> options;		
 		
@@ -286,6 +313,10 @@ public class CommandExecutor implements Consumer{
 				/*if(opts.get("type")!=null || opts.get("gender")!=null){
 					cmd = Command.SEARCH_BY_TYPE_AND
 				}*/
+			}else
+			if(text.equalsIgnoreCase("exit")){
+				cmd = Command.EXIT;
+				cmd.setOptions(opts);
 			}
 			return cmd;
 		}

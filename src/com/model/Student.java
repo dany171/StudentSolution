@@ -19,6 +19,15 @@ public class Student {
 			}
 			return null;
 		}
+		
+		public String toString(){
+			if(this.equals(MALE)){
+				return "M";
+			}else{
+				return "F";
+			}
+			
+		}
 	}
 	
 	public enum Type{
@@ -79,6 +88,6 @@ public class Student {
 	}
 	
 	public String toString(){
-		return "id="+id.toString()+" name="+name.toString()+" gender="+gender.toString()+" type="+type.toString()+" timestamp="+timestamp.toString();
+		return id.toString()+", "+type.toString()+", "+name+", "+gender.toString()+", "+timestamp.toString();
 	}
 }

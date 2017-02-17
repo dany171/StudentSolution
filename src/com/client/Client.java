@@ -22,6 +22,7 @@ public class Client {
 			
 			case "exit":
 				runClient=false;
+				sendCommand(inputString+" persist=true");
 				break;
 			case "host":
 				host= inputString;
