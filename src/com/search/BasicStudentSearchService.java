@@ -1,5 +1,6 @@
 package com.search;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.model.Student;
@@ -21,9 +22,9 @@ public class BasicStudentSearchService implements StudentSearchService {
 	}
 
 	@Override
-	public Student[] searchByTypeAndGender(Type type, Gender gender) {
-		System.out.println("searchByTypeAndGender");
-		return null;
+	public Collection<Student> searchByGender(Gender gender,
+			Map<Gender, Collection<Student>> studentsByGender) {
+		return studentsByGender.get(gender);
 	}
 
 }

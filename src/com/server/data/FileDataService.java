@@ -1,5 +1,6 @@
 package com.server.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,14 +8,24 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.model.Student;
+import com.model.Student.Gender;
 
 public class FileDataService implements DataService{
 
 	Long lastId = 1L;
 	
-	HashMap<Long, Student> students = new HashMap<Long,Student>();
+	Map<Long, Student> students = new HashMap<Long,Student>();
 	
-	HashMap<String, Student> byName = new HashMap<String,Student>();
+	Map<String, Student> byName = new HashMap<String,Student>();
+	
+	Collection<Student> males = new ArrayList<Student>();
+	Collection<Student> females = new ArrayList<Student>();
+	Map<Gender,Collection<Student>> byGender = new HashMap<Gender,Collection<Student>>();
+	
+	public FileDataService(){
+		byGender.put(Gender.MALE, males);
+		byGender.put(Gender.FEMALE, females);
+	}
 	
 	@Override
 	public Student save(Student student) {
@@ -29,6 +40,12 @@ public class FileDataService implements DataService{
 		
 		students.put(student.getId(),student);
 		byName.put(student.getName(),student);
+		//gender
+		if(student.getGender()==Gender.MALE){
+			males.add(student);
+		}else{
+			females.add(student);
+		}		 
 		
 		System.out.println("user saved");
 		return student;		
@@ -42,6 +59,26 @@ public class FileDataService implements DataService{
 		students.put(student.getId(), student);
 		byName.put(student.getName(),student);
 		
+		//gender
+		Student oldStudent = students.get(student.getId());
+		if(oldStudent.getGender()==student.getGender()){
+			if(student.getGender()==Gender.MALE){
+				males.remove(oldStudent);
+				males.add(student);
+			}else{
+				females.remove(oldStudent);
+				females.add(student);
+			}	
+		}else{
+			if(student.getGender()==Gender.MALE){
+				females.remove(oldStudent);
+				males.add(student);
+			}else{
+				males.remove(oldStudent);
+				females.add(student);
+			}
+		}
+		
 		System.out.println("user updated");		
 		return student;
 	}
@@ -53,6 +90,12 @@ public class FileDataService implements DataService{
 		byName.remove(student.getName());
 		
 		students.remove(id);
+				
+		if(student.getGender()==Gender.MALE){
+			males.remove(student);
+		}else{
+			females.remove(student);
+		}	
 		
 		System.out.println("User deleted");
 	}	
@@ -72,6 +115,10 @@ public class FileDataService implements DataService{
 	
 	public Map<String, Student> getStudentsByName(){		
 		return byName;		
+	}
+	
+	public Map<Gender,Collection<Student>> getStudentsByGender(){
+		return byGender;
 	}
 	
 	

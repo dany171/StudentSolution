@@ -1,5 +1,6 @@
 package com.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,9 @@ public class CommandExecutor implements Consumer{
 			}else
 			if(cmd==Command.SEARCH_BY_NAME){
 				return executeSearchByName(cmd);
+			}else
+			if(cmd==Command.SEARCH_BY_GENDER){
+				return executeSearchByGender(cmd);
 			}
 		
 		}catch(ParseCommandException pe){
@@ -160,6 +164,31 @@ public class CommandExecutor implements Consumer{
 		
 	}
 	
+	private String executeSearchByGender(Command cmd) throws BadSearchException{
+		
+		HashMap<String,String> options = cmd.getOptions();
+		String gender = options.get("gender");
+		
+		if( "gender"==null ){ 
+			throw new BadSearchException("Missing gender option");
+		}	
+
+		try{
+			
+			Collection<Student> students= processSearchByGender(Gender.getGender(gender), 
+					dataService.getStudentsByGender());
+			if(students==null || students.isEmpty()){
+				return "No students found";
+			}else{
+				return students.toString();
+			}
+			
+		}catch(Exception e){
+			throw new BadSearchException("Error while searching by gender",e);
+		}		
+		
+	}
+	
 	@Override
 	public Student processSave(Student student) {
 		return dataService.save(student);		
@@ -183,6 +212,10 @@ public class CommandExecutor implements Consumer{
 		return searchService.searchByName(name, studentsByName);
 		
 	}
+		
+	public Collection<Student> processSearchByGender(Gender gender, Map<Gender,Collection<Student>> studentsByGender) {
+		return searchService.searchByGender(gender , studentsByGender);		
+	}
 /*
 	@Override
 	public void processSearchByType(Type type) {
@@ -190,10 +223,7 @@ public class CommandExecutor implements Consumer{
 		
 	}
 
-	@Override
-	public void processSearhByTypeAndGender(Type type, Gender gender) {
-		searchService.searchByTypeAndGender(type, gender);		
-	}*/
+	*/
 	
 	private Command parseCommand(String text) throws ParseCommandException{
 		
@@ -223,7 +253,7 @@ public class CommandExecutor implements Consumer{
 	}
 	
 	private enum Command{
-		CREATE, UPDATE, DELETE, SEARCH_BY_NAME;
+		CREATE, UPDATE, DELETE, SEARCH_BY_NAME,SEARCH_BY_GENDER;
 		
 		private HashMap<String,String> options;		
 		
@@ -248,8 +278,12 @@ public class CommandExecutor implements Consumer{
 				if(opts.get("name")!=null){
 					cmd = Command.SEARCH_BY_NAME;
 					cmd.setOptions(opts);
-				}/*else
-				if(opts.get("type")!=null || opts.get("gender")!=null){
+				}else
+				if(opts.get("gender")!=null){
+					cmd = Command.SEARCH_BY_GENDER;
+					cmd.setOptions(opts);
+				}
+				/*if(opts.get("type")!=null || opts.get("gender")!=null){
 					cmd = Command.SEARCH_BY_TYPE_AND
 				}*/
 			}
