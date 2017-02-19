@@ -3,19 +3,30 @@ package com.search;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import com.model.Student;
 import com.model.Student.Gender;
 import com.model.Student.Type;
+import com.server.data.InvertedIndexTreeByName;
 import com.server.data.PropertyTypeMap;
 
 public class BasicStudentSearchService implements StudentSearchService {
 
+	private final static SortByName sortByName = new SortByName();
+	
 	@Override
-	public Student searchByName(String name, Map<String, Student> studentsByName) {
-		return studentsByName.get(name);
+	public Collection<Student> searchByName(String name, InvertedIndexTreeByName studentsByName) {
+		
+		TreeMap<Long,Student> studentsTree = studentsByName.get(name);
+		
+		List<Student> students = new ArrayList<Student>(studentsTree.values());
+				
+		Collections.sort(students, BasicStudentSearchService.sortByName);
+		
+		return students;
 	}
 
 	/*public Student searchByNameSorted(String name, Map<String, Student> studentsByName) {
@@ -73,6 +84,13 @@ public class BasicStudentSearchService implements StudentSearchService {
 		Collections.sort(res);
 
 		return res;
+	}
+	
+	private  static class SortByName implements Comparator<Student>{
+		@Override
+		public int compare(Student o1, Student o2) {
+			return o1.getName().compareTo(o2.getName());
+		}
 	}
 
 }

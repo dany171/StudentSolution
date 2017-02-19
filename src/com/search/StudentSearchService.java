@@ -1,16 +1,16 @@
 package com.search;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.model.Student;
 import com.model.Student.Gender;
 import com.model.Student.Type;
+import com.server.data.InvertedIndexTreeByName;
 import com.server.data.PropertyTypeMap;
 
 public interface StudentSearchService {
 	
-	public Student searchByName(String name, Map<String,Student> studentsByName);
+	public Collection<Student> searchByName(String name, InvertedIndexTreeByName studentsByName);
 	
 	public Collection<Student> searchByType(Type type, PropertyTypeMap<Type> studentsByType);
 	

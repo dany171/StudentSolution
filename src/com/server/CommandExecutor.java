@@ -2,7 +2,6 @@ package com.server;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.exceptions.BadDeleteException;
 import com.exceptions.BadSearchException;
@@ -15,6 +14,7 @@ import com.model.Student.Type;
 import com.search.StudentSearchService;
 import com.server.data.Consumer;
 import com.server.data.DataService;
+import com.server.data.InvertedIndexTreeByName;
 import com.server.data.PropertyTypeMap;
 
 public class CommandExecutor implements Consumer {
@@ -217,15 +217,15 @@ public class CommandExecutor implements Consumer {
 
 		try {
 
-			Student student = processSearchByName(name, dataService.getStudentsByName());
+			Collection<Student> students = processSearchByName(name, dataService.getStudentsByName());
 			
-			if (student == null) {
+			if (students == null) {
 				
 				return "Student not found";
 				
 			} else {
 				
-				return student.toString();
+				return students.toString();
 				
 			}
 
@@ -397,7 +397,7 @@ public class CommandExecutor implements Consumer {
 		this.searchService = sss;
 	}
 
-	public Student processSearchByName(String name, Map<String, Student> studentsByName) {
+	public Collection<Student> processSearchByName(String name, InvertedIndexTreeByName studentsByName) {
 		
 		return searchService.searchByName(name, studentsByName);
 	}

@@ -21,6 +21,8 @@ public class FileDataService implements DataService {
 
 	Map<String, Student> byName;
 
+	InvertedIndexTreeByName iByName;
+	
 	PropertyTypeMap<Gender> byGender;
 
 	PropertyTypeMap<Type> byType;
@@ -30,6 +32,8 @@ public class FileDataService implements DataService {
 		students = new HashMap<Long, Student>();
 		
 		byName = new HashMap<String, Student>();
+		
+		iByName = new InvertedIndexTreeByName();
 
 		byType = new PropertyTypeMap<Type>();
 		
@@ -58,6 +62,8 @@ public class FileDataService implements DataService {
 		students.put(student.getId(), student);
 
 		byName.put(student.getName(), student);
+		
+		iByName.put(student);
 
 		byGender.put(student, student.getGender());
 
@@ -79,6 +85,8 @@ public class FileDataService implements DataService {
 		
 		byName.put(student.getName(), student);
 		
+		iByName.update(student);
+		
 		byGender.update(student, student.getGender());
 		
 		byType.update(student, student.getType());
@@ -94,6 +102,8 @@ public class FileDataService implements DataService {
 		Student student = students.get(id);
 
 		byName.remove(student.getName());
+		
+		iByName.remove(student);
 
 		students.remove(id);
 
@@ -104,8 +114,12 @@ public class FileDataService implements DataService {
 		System.out.println("User deleted");
 	}
 
-	public Map<String, Student> getStudentsByName() { return byName; }
+	//public Map<String, Student> getStudentsByName() { return byName; }
 
+	//public Map<String, Student> getStudentsByName() { return byName; }
+	
+	public InvertedIndexTreeByName getStudentsByName() { return iByName; }
+	
 	public PropertyTypeMap<Gender> getStudentsByGender() { return byGender;	}
 
 	public PropertyTypeMap<Type> getStudentsByType() { return byType; }
@@ -153,13 +167,15 @@ public class FileDataService implements DataService {
 		
 		String line = "";
 		
-		String splitBy = ",";
+		String splitBy = "-";
 		
 		boolean res = false;
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
 
 			while ((line = br.readLine()) != null) {
+				
+				line = line.replaceAll("@", "");
 				
 				String[] studentStr = line.split(splitBy);
 				
@@ -173,7 +189,6 @@ public class FileDataService implements DataService {
 				
 				Long timestamp = new Long(studentStr[4]);
 
-				
 				Student student = new Student();
 				
 				student.setId(id);
@@ -189,6 +204,8 @@ public class FileDataService implements DataService {
 				students.put(student.getId(), student);
 
 				byName.put(student.getName(), student);
+				
+				iByName.put(student);
 
 				byGender.put(student, student.getGender());
 

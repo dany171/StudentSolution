@@ -1,7 +1,5 @@
 package com.server.data;
 
-import java.util.Map;
-
 import com.model.Student;
 import com.model.Student.Gender;
 import com.model.Student.Type;
@@ -18,7 +16,9 @@ public interface DataService {
 
 	public boolean load(String filename);
 
-	public Map<String, Student> getStudentsByName();
+	//public Map<String, Student> getStudentsByName();
+	
+	public InvertedIndexTreeByName getStudentsByName();
 
 	public PropertyTypeMap<Gender> getStudentsByGender();
 
