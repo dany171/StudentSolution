@@ -1,6 +1,6 @@
 package com.model;
 
-public class Student {
+public class Student implements Comparable<Student>{
 	
 	private Long id;
 	
@@ -49,6 +49,12 @@ public class Student {
 			return null;
 		}
 	}
+	
+
+	@Override
+	public int compareTo(Student o) {
+		return o.getTimestamp().compareTo(this.timestamp);
+	}
 
 	public String getName() { return name; }
 
@@ -72,10 +78,10 @@ public class Student {
 
 	public String toString() {
 		
-		return id.toString() + ","
-				+ type.toString() + "," 
-				+ name + ","
-				+ gender.toString() + ","
-				+ timestamp.toString();
+		return id.toString() + "-"
+				+ type.toString() + "-" 
+				+ name + "-"
+				+ gender.toString() + "-"
+				+ timestamp.toString()+"@";
 	}
 }

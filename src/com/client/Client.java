@@ -47,7 +47,9 @@ public class Client {
 			BufferedReader inFromServer = new BufferedReader(
 					new InputStreamReader(clientSocket.getInputStream()));
 
-			System.out.println(inFromServer.readLine());
+			String line = inFromServer.readLine();
+			line = line.replaceAll("[ \\[\\],]", "");
+			System.out.println(line.replace("@", "\n"));
 			clientSocket.close();
 		} catch (Exception e) {
 			System.out.println(e);

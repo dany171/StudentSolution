@@ -225,7 +225,7 @@ public class CommandExecutor implements Consumer {
 				
 			} else {
 				
-				return student.toString().replace(" ", " --");
+				return student.toString();
 				
 			}
 
@@ -259,7 +259,7 @@ public class CommandExecutor implements Consumer {
 				
 			} else {
 				
-				return students.toString().replace(" ", " --");
+				return students.toString();
 			}
 
 		} catch (Exception e) {
@@ -293,7 +293,7 @@ public class CommandExecutor implements Consumer {
 				
 			} else {
 				
-				return students.toString().replace(" ", "-- ");
+				return students.toString();
 				
 			}
 
@@ -337,7 +337,7 @@ public class CommandExecutor implements Consumer {
 				
 			} else {
 				
-				return students.toString().replace(" ", " --");
+				return students.toString();
 				
 			}
 		} catch (Exception e) {
