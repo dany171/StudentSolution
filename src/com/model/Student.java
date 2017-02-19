@@ -1,5 +1,9 @@
 package com.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Student implements Comparable<Student>{
 	
 	private Long id;
@@ -12,6 +16,8 @@ public class Student implements Comparable<Student>{
 	
 	private Long timestamp;
 
+	private static DateFormat dateFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	
 	public enum Gender {
 	
 		MALE, FEMALE;
@@ -77,11 +83,12 @@ public class Student implements Comparable<Student>{
 	public void setId(Long id) { this.id = id; }
 
 	public String toString() {
+		Date ts = new Date(timestamp);
 		
 		return id.toString() + "-"
 				+ type.toString() + "-" 
 				+ name + "-"
 				+ gender.toString() + "-"
-				+ timestamp.toString()+"@";
+				+ Student.dateFormatter.format(ts)+"@";
 	}
 }
