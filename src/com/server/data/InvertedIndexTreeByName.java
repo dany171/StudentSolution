@@ -17,7 +17,7 @@ public class InvertedIndexTreeByName {
 	public void put(Student student){
 		String name = student.getName();
 		
-		for(int i=1; i<name.length(); i++){
+		for(int i=1; i<=name.length(); i++){
 			String sub = name.substring(0,i);
 			
 			TreeMap<Long,Student> indexValue = index.get(sub);
@@ -40,8 +40,7 @@ public class InvertedIndexTreeByName {
 		TreeMap<Long,Student> res = new TreeMap<Long,Student>();
 		
 		for(String key : indexes){
-			if(key.contains(name) || key==name){
-				
+			if(key.contains(name)){
 				res.putAll(index.get(key));
 			}
 		}
