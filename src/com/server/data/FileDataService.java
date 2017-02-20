@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -183,11 +186,20 @@ public class FileDataService implements DataService {
 				
 				Student.Type type = Student.Type.getType(studentStr[1]);
 				
-				String name = studentStr[2];
+				String name = studentStr[2].trim();
 				
 				Student.Gender gender = Student.Gender.getGender(studentStr[3]);
 				
-				Long timestamp = new Long(studentStr[4]);
+				DateFormat a = new SimpleDateFormat("yyyyMMddHHmmss");
+				
+				Long timestamp=null;
+				
+				try {
+					Date d = a.parse(studentStr[4].trim());
+					timestamp = d.getTime();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 
 				Student student = new Student();
 				
