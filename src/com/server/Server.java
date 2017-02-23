@@ -7,33 +7,37 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.search.BasicStudentSearchService;
 import com.server.data.DataServiceInjector;
 import com.server.data.FileDataServiceInjector;
-
+import com.server.search.BasicStudentSearchService;
+/**
+ * Represents the server.
+ * 
+ * This receives client's socket connections and answers them.
+ * 
+ * @author Daniel Echalar
+ *
+ */
 public class Server {
 	
-	private static int port = 6789;
+	// CONSTANTS
+	private static final int SERVER_PORT = 6789;
 	
+	// STATICS
 	private static boolean active = true;
 	
 	public static void main(String[] args) throws IOException {
 		{
-			DataServiceInjector injector = null;
 			
+			DataServiceInjector injector = null;
 			CommandExecutor executor = null;
 			
-			
 			injector = new FileDataServiceInjector();
-			
 			executor = (CommandExecutor) injector.getConsumer();
-			
 			executor.setStudentSearchService(new BasicStudentSearchService());
 			
-			
 			String clientCommand;
-
-			ServerSocket clientSocket = new ServerSocket(port);
+			ServerSocket clientSocket = new ServerSocket(SERVER_PORT);
 
 			while (active) {
 				
@@ -46,11 +50,8 @@ public class Server {
 						connectionSocket.getOutputStream());
 
 				clientCommand = inFromClient.readLine();
-				
 				String commandResponse = executor.execute(clientCommand);
-				
 				System.out.println("Received: " + clientCommand+" - Command executed");
-				
 				outToClient.writeBytes(commandResponse+'\n');
 				
 				connectionSocket.close();

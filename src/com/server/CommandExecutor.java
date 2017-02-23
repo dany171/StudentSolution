@@ -3,527 +3,478 @@ package com.server;
 import java.util.Collection;
 import java.util.HashMap;
 
-import com.exceptions.BadDeleteException;
-import com.exceptions.BadSearchException;
-import com.exceptions.BadStudentException;
-import com.exceptions.BadUpdateException;
-import com.exceptions.ParseCommandException;
+import com.exceptions.BadRequestException;
+import com.model.Gender;
 import com.model.Student;
-import com.model.Student.Gender;
-import com.model.Student.Type;
-import com.search.StudentSearchService;
+import com.model.Type;
 import com.server.data.Consumer;
 import com.server.data.DataService;
-import com.server.data.InvertedIndexTreeByName;
-import com.server.data.PropertyTypeMap;
+import com.server.data.StudentsIndexByName;
+import com.server.data.StudentCatalogs;
+import com.server.search.StudentSearchService;
 
+/**
+ * Process commands
+ * 
+ * This has a DataService and a StudentSearchService 
+ * to process commands.
+ * 
+ * Implements Consumer class so it gets DataService injected
+ *  
+ * Uses a DataService implementation
+ * to load students contained in input.csv file 
+ * 
+ * @author Daniel Echalar
+ *
+ */
 public class CommandExecutor implements Consumer {
 
+	// CONSTANTS
+	private final String FILENAME = "input.csv";
+
+	// PROPERTIES
 	private DataService dataService;
 	
 	private StudentSearchService searchService;
-	
-	private String filename = "input.csv";
 
+	// CONSTRUCTOR
 	public CommandExecutor(DataService dataService) {
 	
 		this.dataService = dataService;
-		
-		boolean dataLoaded = this.dataService.load(filename);
-		
+		boolean dataLoaded = this.dataService.load(FILENAME);
 		System.out.println("load data: " + dataLoaded);
 	}
 
+	// METHODS
+	/**
+	 * Parses a command and execute it.
+	 * 
+	 * @param command a string containing the command to execute
+	 * @return a string containing the response to command execution
+	 * @throws an exception if something fails
+	 */
 	public String execute(String command) {
 
 		Command cmd;
-
+		String res = "";
+		
 		try {
 			cmd = parseCommand(command);
-
-			if (cmd == Command.CREATE) {
-				
-				return executeCreateStudent(cmd);
-				
-			} else if (cmd == Command.UPDATE) {
-				
-				return executeUpdateStudent(cmd);
-				
-			} else if (cmd == Command.DELETE) {
-				
-				return executeDeleteStudent(cmd);
-				
-			} else if (cmd == Command.SEARCH_BY_TYPE_AND_GENDER) {//search blocks could be re-factorized into one
-				
-				return executeSearchByTypeAndGender(cmd);
 			
-			} else if (cmd == Command.SEARCH_BY_NAME) {
-				
-				return executeSearchByName(cmd);
-				
-			} else
-			if (cmd == Command.SEARCH_BY_GENDER) {
-				
-				return executeSearchByGender(cmd);
-				
-			} else if (cmd == Command.SEARCH_BY_TYPE) {
-				
-				return executeSearchByType(cmd);
-				
+			switch(cmd){
+				case CREATE:
+					res = executeCreateStudent(cmd);
+					break;
+				case UPDATE:
+					res = executeUpdateStudent(cmd);
+					break;
+				case DELETE:
+					res = executeDeleteStudent(cmd);
+					break;
+				case SEARCH_BY_TYPE_AND_GENDER:
+					res = executeSearchByTypeAndGender(cmd);
+					break;
+				case SEARCH_BY_NAME:
+					res = executeSearchByName(cmd);
+					break;
+				case SEARCH_BY_GENDER:
+					res = executeSearchByGender(cmd);
+					break;
+				case SEARCH_BY_TYPE:
+					res = executeSearchByType(cmd);
+					break;
+				case EXIT:
+					res = executeExit(cmd);
+					break;
+				default:
+					res = "Command not found";
 			}
-			if (cmd == Command.EXIT) {
-				
-				return executeExit(cmd);
-			}
-
-		} catch (ParseCommandException pe) {
 			
-			return pe.getMessage();
+			return res;
 			
-		} catch (BadStudentException bse) {
-			
-			return bse.getMessage();
-			
-		} catch (BadUpdateException bue) {
-			
-			return bue.getMessage();
-			
-		} catch (BadDeleteException bde) {
-			
-			return bde.getMessage();
-			
-		} catch (BadSearchException se) {
-			
-			return se.getMessage();
-			
-		}
-
-		return "Command not found";
-
+		} catch (BadRequestException be) {
+			return be.getMessage();
+		}	
 	}
 
-	private String executeCreateStudent(Command cmd) throws BadStudentException {
+	/**
+	 * Execute create student command.
+	 * 
+	 * example:
+	 * create name=john gender=male type=kindergarden
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string representation of created student
+	 * @throws BadStudentException if error while saving the student or 
+	 * if the command is wrong
+	 */
+	private String executeCreateStudent(Command cmd) throws BadRequestException {
 
 		HashMap<String, String> options = cmd.getOptions();
 
 		Student student = new Student();
-
 		student.setName(options.get("name"));
-		
 		student.setGender(Gender.getGender(options.get("gender")));
-		
 		student.setType(Type.getType(options.get("type")));
 
-		if (student.getName() == null || 
-			student.getName().equalsIgnoreCase("") ||
-			student.getGender() == null ||
-			student.getType() == null) {
+		if (student.getName() == null 
+				|| student.getName().equalsIgnoreCase("") 
+				|| student.getGender() == null 
+				|| student.getType() == null) {
 			
-			throw new BadStudentException("Missing name, gender or type");
+			throw new BadRequestException("Missing name, gender or type");
 		}
 
 		try {
-
 			Student newStudent = processSave(student);
-			
-			return "Student Created:" + newStudent.toString();
+			return "Student created:" + newStudent.toString();
 
 		} catch (Exception e) {
-			
-			throw new BadStudentException("Error while saving", e);
-			
+			throw new BadRequestException("Error while saving", e);
 		}
 	}
 
-	private String executeUpdateStudent(Command cmd) throws BadUpdateException {
+	/**
+	 * Execute update student command 
+	 * 
+	 * example
+	 * update id=1 name=bob gender=male type=elementary
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string representation of created student
+	 * @throws BadUpdateException  if error while updating the student or 
+	 * if the command is wrong
+	 */
+	private String executeUpdateStudent(Command cmd) throws BadRequestException {
 		
 		HashMap<String, String> options = cmd.getOptions();
 
 		Student student = new Student();
-
 		student.setId(new Long(options.get("id")));
-		
 		student.setName(options.get("name"));
-		
 		student.setGender(Gender.getGender(options.get("gender")));
-		
 		student.setType(Type.getType(options.get("type")));
 
-		if (student.getId() == null ||
-			student.getName() == null ||
-			student.getName().equalsIgnoreCase("")||
-			student.getGender() == null ||
-			student.getType() == null
-			) {
+		if (student.getId() == null
+				|| student.getName() == null
+				|| student.getName().equalsIgnoreCase("")
+				|| student.getGender() == null
+				|| student.getType() == null) {
 			
-			throw new BadUpdateException("Missing id, name, gender or type");
-			
+			throw new BadRequestException("Missing id, name, gender or type");
 		}
-
+		
 		try {
-
 			Student updatedStudent = processUpdate(student);
-			
 			return "Student updated:" + updatedStudent.toString();
 
 		} catch (Exception e) {
-			
-			throw new BadUpdateException("Error while updating", e);
-			
+			throw new BadRequestException("Error while updating", e);
 		}
 	}
 
-	private String executeDeleteStudent(Command cmd) throws BadDeleteException {
+	/**
+	 * Execute delete student command 
+	 * 
+	 * example:
+	 * delete 5
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a message pointing the ID of the deleted student
+	 * @throws BadRequestException  if error while deleting the student or 
+	 * if the command is wrong
+	 */
+	private String executeDeleteStudent(Command cmd) throws BadRequestException {
 		
 		HashMap<String, String> options = cmd.getOptions();
-		
 		Long id;
 		
 		try {
-			
 			String strId = options.get("id");
-			
 			id = new Long(strId);
 			
-		} catch (Exception e) {
-			
-			throw new BadDeleteException("Id empty or incompatible", e);
-			
+		} catch (Exception e) {			
+			throw new BadRequestException("Id empty or incompatible", e);			
 		}
 
-		try {
-			
+		try {			
 			processDelete(id);
-			
 			return "Student with ID: " + id + " was deleted";
 			
-		} catch (Exception e) {
-			
-			throw new BadDeleteException("Error while deleting", e);
-			
+		} catch (Exception e) {			
+			throw new BadRequestException("Error while deleting", e);			
 		}
 	}
 
-	private String executeSearchByName(Command cmd) throws BadSearchException {
+	/**
+	 * Execute search by name command 
+	 * 
+	 * example:
+	 * search name=john
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string containing the results
+	 * @throws BadSearchException  if error while searching students or 
+	 * if the command is wrong
+	 */
+	private String executeSearchByName(Command cmd) throws BadRequestException {
 
 		HashMap<String, String> options = cmd.getOptions();
-		
 		String name = options.get("name");
 
 		if (name == null) {
-			
-			throw new BadSearchException("Missing name option");
+			throw new BadRequestException("Missing name option");
 		}
 
 		try {
-
-			Collection<Student> students = processSearchByName(name, dataService.getStudentsByName());
+			Collection<Student> students = processSearchByName(name, 
+					dataService.getStudentsByName());
 			
 			if (students == null) {
-				
 				return "Student not found";
-				
 			} else {
-				
 				return students.toString();
-				
 			}
 
 		} catch (Exception e) {
-			
-			throw new BadSearchException("Error while searching by name", e);
-			
+			throw new BadRequestException("Error while searching by name", e);
 		}
 	}
 
-	private String executeSearchByGender(Command cmd) throws BadSearchException {
+	/**
+	 * Execute search by gender command 
+	 * 
+	 * example:
+	 * search gender=male
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string containing the results
+	 * @throws BadSearchException  if error while searching students or 
+	 * if the command is wrong
+	 */
+	private String executeSearchByGender(Command cmd) throws BadRequestException {
 
 		HashMap<String, String> options = cmd.getOptions();
-		
 		String gender = options.get("gender");
 
 		if (gender == null) {
-			
-			throw new BadSearchException("Missing gender option");
-			
+			throw new BadRequestException("Missing gender option");
 		}
 
 		try {
-
 			Collection<Student> students = processSearchByGender(
-					Gender.getGender(gender), dataService.getStudentsByGender());
-			
-			if (students == null || students.isEmpty()) {
-				
-				return "No students found";
-				
-			} else {
-				
-				return students.toString();
-			}
-
-		} catch (Exception e) {
-			
-			throw new BadSearchException("Error while searching by gender", e);
-			
-		}
-
-	}
-
-	private String executeSearchByType(Command cmd) throws BadSearchException {
-
-		HashMap<String, String> options = cmd.getOptions();
-		
-		String type = options.get("type");
-
-		if (type == null) {
-			
-			throw new BadSearchException("Missing type option");
-			
-		}
-
-		try {
-
-			Collection<Student> students = processSearchByType(
-					Type.getType(type), dataService.getStudentsByType());
-			
-			if (students == null || students.isEmpty()) {
-				
-				return "No students found";
-				
-			} else {
-				
-				return students.toString();
-				
-			}
-
-		} catch (Exception e) {
-			
-			throw new BadSearchException("Error while searching by gender", e);
-			
-		}
-
-	}
-
-	private String executeSearchByTypeAndGender(Command cmd) throws BadSearchException {
-
-		HashMap<String, String> options = cmd.getOptions();
-		
-		String type = options.get("type");
-		
-		String gender = options.get("gender");
-
-		if (type == null) {
-			
-			throw new BadSearchException("Missing type option");
-			
-		}
-		if (gender == null) {
-			
-			throw new BadSearchException("Missing gender option");
-			
-		}
-
-		try {
-
-			Collection<Student> students = processSearchByTypeAndGender(
-					Type.getType(type), Gender.getGender(gender),
-					dataService.getStudentsByType(),
+					Gender.getGender(gender), 
 					dataService.getStudentsByGender());
 			
 			if (students == null || students.isEmpty()) {
-				
 				return "No students found";
-				
 			} else {
-				
 				return students.toString();
-				
 			}
+			
 		} catch (Exception e) {
+			throw new BadRequestException("Error while searching by gender", e);
+		}
+
+	}
+
+	/**
+	 * Execute search by type command 
+	 * 
+	 * example:
+	 * search type=kindergarden
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string containing the results
+	 * @throws BadSearchException  if error while searching students or 
+	 * if the command is wrong
+	 */
+	private String executeSearchByType(Command cmd) throws BadRequestException {
+
+		HashMap<String, String> options = cmd.getOptions();
+		String type = options.get("type");
+
+		if (type == null) {
+			throw new BadRequestException("Missing type option");
+		}
+
+		try {
+			Collection<Student> students = processSearchByType(
+					Type.getType(type), 
+					dataService.getStudentsByType());
 			
-			throw new BadSearchException("Error while searching by type and gender", e);
+			if (students == null || students.isEmpty()) {
+				return "No students found";
+			} else {
+				return students.toString();
+			}
 			
+		} catch (Exception e) {
+			throw new BadRequestException("Error while searching by gender", e);
 		}
 	}
 
+	/**
+	 * Execute search by type  and gender command 
+	 * 
+	 * example:
+	 * search type=kindergarden gender=male
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a string containing the results
+	 * @throws BadSearchException  if error while searching students or 
+	 * if the command is wrong
+	 */
+	private String executeSearchByTypeAndGender(Command cmd) throws BadRequestException {
+
+		HashMap<String, String> options = cmd.getOptions();
+		String type = options.get("type");
+		String gender = options.get("gender");
+
+		if (type == null) {
+			throw new BadRequestException("Missing type option");
+		}
+		if (gender == null) {
+			throw new BadRequestException("Missing gender option");
+		}
+
+		try {
+			StudentCatalogs<Type> studentsByTypes = dataService.getStudentsByType();
+			StudentCatalogs<Gender> studentsByGender = dataService.getStudentsByGender();
+			
+			Collection<Student> students = processSearchByTypeAndGender(
+					Type.getType(type), 
+					Gender.getGender(gender),
+					studentsByTypes,
+					studentsByGender);
+			
+			if (students == null || students.isEmpty()) {
+				return "No students found";
+			} else {
+				return students.toString();
+			}
+			
+		} catch (Exception e) {
+			throw new BadRequestException("Error while searching by type and gender", e);
+		}
+	}
+
+	/**
+	 * Execute exit command.
+	 * Persists all data before exiting
+	 * 
+	 * example:
+	 * exit
+	 * 
+	 * @param cmd a string containing the command
+	 * @return a message saying bye if everything went fine
+	 * or, a error message if persistence failed
+	 */
 	public String executeExit(Command cmd) {
 
 		HashMap<String, String> options = cmd.getOptions();
-		
 		boolean persist = new Boolean(options.get("persist"));
 
 		if (persist) {
 			
-			boolean exitSuccess = processExit(filename);
+			boolean exitSuccess = processExit(FILENAME);
 
 			if (exitSuccess) {
-				
 				return "All data persisted. bye";
-				
 			} else {
-				
 				return "Could not persist data. bye";
-				
 			}
+			
 		} else {
-			
 			return "Ok, we are not saving anything! :) bye";
-			
 		}
 	}
 
 	@Override
 	public Student processSave(Student student) {
-		
 		return dataService.save(student);
-		
 	}
 
 	@Override
 	public void processDelete(Long id) {
-		
 		dataService.delete(id);
 	}
 
 	@Override
 	public Student processUpdate(Student student) {
-		
 		return dataService.update(student);
 	}
 
 	public void setStudentSearchService(StudentSearchService sss) {
-		
 		this.searchService = sss;
 	}
 
-	public Collection<Student> processSearchByName(String name, InvertedIndexTreeByName studentsByName) {
+	public Collection<Student> processSearchByName(
+			String name, 
+			StudentsIndexByName studentsByName) {
 		
 		return searchService.searchByName(name, studentsByName);
 	}
 
-	public Collection<Student> processSearchByGender(Gender gender,
-			PropertyTypeMap<Gender> studentsByGender) {
+	public Collection<Student> processSearchByGender(
+			Gender gender,
+			StudentCatalogs<Gender> studentsByGender) {
 		
 		return searchService.searchByGender(gender, studentsByGender);
 	}
 
-	public Collection<Student> processSearchByType(Type type,
-			PropertyTypeMap<Type> studentsByTypes) {
+	public Collection<Student> processSearchByType(
+			Type type,
+			StudentCatalogs<Type> studentsByTypes) {
 		
 		return searchService.searchByType(type, studentsByTypes);
 	}
 
-	public Collection<Student> processSearchByTypeAndGender(Type type,
-			Gender gender, PropertyTypeMap<Type> studentsByTypes,
-			PropertyTypeMap<Gender> studentsByGender) {
+	public Collection<Student> processSearchByTypeAndGender(
+			Type type,
+			Gender gender, StudentCatalogs<Type> studentsByTypes,
+			StudentCatalogs<Gender> studentsByGender) {
 
-		return searchService.searchByTypeAndGender(type, gender, studentsByTypes, studentsByGender);
+		return searchService.searchByTypeAndGender(
+				type,
+				gender,
+				studentsByTypes,
+				studentsByGender);
 	}
 
 	public boolean processExit(String filename) {
-		
 		return dataService.persist(filename);
 	}
 
-	private Command parseCommand(String text) throws ParseCommandException {
-
+	/**
+	 * Parse the command provided in a string
+	 * The objective of this method is to return a Command object
+	 * containing the right command instance and all its options
+	 * 
+	 * @param text a string containing a command
+	 * @return a Command instance containing its options
+	 * @throws BadRequestException if something goes wrong
+	 */
+	private Command parseCommand(String text) throws BadRequestException {
 		try {
 			
 			String[] tokens = text.split(" ");
-
 			String cmd = tokens[0];
-
 			text = text.substring(text.indexOf(" ") + 1);
-
 			text = text.replaceAll(tokens[0], "");
-
 			String[] options = text.split(" ");
 
 			HashMap<String, String> opts = new HashMap<String, String>();
 
 			for (String option : options) {
-				
 				String[] optAndValue = option.split("=");
-				
 				opts.put(optAndValue[0], optAndValue[1]);
 			}
 
 			return Command.getCommand(cmd, opts);
 
 		} catch (Exception e) {
-			
-			throw new ParseCommandException(e);
+			throw new BadRequestException(e);
 		}
-	}
-
-	private enum Command {
-		
-		CREATE,
-		UPDATE,
-		DELETE,
-		SEARCH_BY_NAME,
-		SEARCH_BY_GENDER,
-		SEARCH_BY_TYPE,
-		SEARCH_BY_TYPE_AND_GENDER,
-		EXIT;
-
-		private HashMap<String, String> options;
-
-		public static Command getCommand(String text, HashMap<String, String> opts) {
-
-			Command cmd = null;
-
-			if (text.equalsIgnoreCase("create")) {
-				
-				cmd = Command.CREATE;
-				cmd.setOptions(opts);
-
-			} else if (text.equalsIgnoreCase("update")) {
-				
-				cmd = Command.UPDATE;
-				cmd.setOptions(opts);
-				
-			} else if (text.equalsIgnoreCase("delete")) {
-				
-				cmd = Command.DELETE;
-				cmd.setOptions(opts);
-				
-			} else if (text.equalsIgnoreCase("search")) {
-				
-				if (opts.get("type") != null && opts.get("gender") != null) {
-					
-					cmd = Command.SEARCH_BY_TYPE_AND_GENDER;
-					
-				} else if (opts.get("name") != null) {
-					
-					cmd = Command.SEARCH_BY_NAME;
-					
-				} else if (opts.get("gender") != null) {
-					
-					cmd = Command.SEARCH_BY_GENDER;
-					
-				} else if (opts.get("type") != null) {
-					
-					cmd = Command.SEARCH_BY_TYPE;
-					
-				}
-				
-				cmd.setOptions(opts);
-				
-			} else if (text.equalsIgnoreCase("exit")) {
-				
-				cmd = Command.EXIT;
-				
-				cmd.setOptions(opts);
-			}
-			
-			return cmd;
-		}
-
-		public HashMap<String, String> getOptions() { return options; }
-
-		public void setOptions(HashMap<String, String> options) { this.options = options; }
-
 	}
 }
