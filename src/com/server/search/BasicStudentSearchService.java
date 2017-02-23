@@ -44,12 +44,8 @@ public class BasicStudentSearchService implements StudentSearchService {
 			StudentCatalogs<Gender> studentsByGender) {
 		
 		Collection<Student> students = studentsByGender.getCatalog(gender);
-		
 		List<Student> res = new ArrayList<Student>(students);
-		System.out.println(res);
-		
 		Collections.sort(res);		
-		System.out.println(res);
 
 		return res;
 	}
