@@ -28,7 +28,7 @@ public class FileDataService implements DataService {
 	
 	Map<Long, Student> students;
 
-	StudentsIndexByName studentsIndexedByName;
+	StudentIndexByName studentsIndexedByName;
 	
 	StudentCatalogs<Gender> studentsCatalogedByGender;
 
@@ -38,7 +38,7 @@ public class FileDataService implements DataService {
 	// CONSTRUCTOR
 	public FileDataService() {
 		students = new HashMap<Long, Student>();
-		studentsIndexedByName = new StudentsIndexByName();
+		studentsIndexedByName = new StudentIndexByName();
 		studentsCatalogedByType = new StudentCatalogs<Type>();
 		studentsCatalogedByGender = new StudentCatalogs<Gender>();
 	}
@@ -94,7 +94,7 @@ public class FileDataService implements DataService {
 		System.out.println("User deleted");
 	}
 		
-	public StudentsIndexByName getStudentsByName() { return studentsIndexedByName; }
+	public StudentIndexByName getStudentsByName() { return studentsIndexedByName; }
 	
 	public StudentCatalogs<Gender> getStudentsByGender() { return studentsCatalogedByGender;	}
 

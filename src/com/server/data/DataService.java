@@ -49,7 +49,7 @@ public interface DataService {
 	 * 
 	 * @return a inverted index containing student names and students
 	 */
-	public StudentsIndexByName getStudentsByName();
+	public StudentIndexByName getStudentsByName();
 
 	/**
 	 * Get catalogs of students by gender

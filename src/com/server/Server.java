@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import com.server.data.DataServiceInjector;
-import com.server.data.FileDataServiceInjector;
-import com.server.search.BasicStudentSearchService;
 /**
  * Represents the server.
  * 
@@ -28,13 +24,7 @@ public class Server {
 	
 	public static void main(String[] args) throws IOException {
 		{
-			
-			DataServiceInjector injector = null;
-			CommandExecutor executor = null;
-			
-			injector = new FileDataServiceInjector();
-			executor = (CommandExecutor) injector.getConsumer();
-			executor.setStudentSearchService(new BasicStudentSearchService());
+			CommandExecutor executor = new CommandExecutor();
 			
 			String clientCommand;
 			ServerSocket clientSocket = new ServerSocket(SERVER_PORT);

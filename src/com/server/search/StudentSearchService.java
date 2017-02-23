@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
-import com.server.data.StudentsIndexByName;
+import com.server.data.StudentIndexByName;
 import com.server.data.StudentCatalogs;
 
 /**
@@ -26,7 +26,7 @@ public interface StudentSearchService {
 	 * @return a collection of students
 	 */
 	public Collection<Student> searchByName(String name,
-			StudentsIndexByName studentsByName);
+			StudentIndexByName studentsByName);
 
 	/**
 	 * Search students by type.

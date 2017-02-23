@@ -16,13 +16,13 @@ import com.model.Student;
  * @author Daniel Echalar
  *
  */
-public class StudentsIndexByName {
+public class StudentIndexByName {
 
 	// PROPERTIES
 	public TreeMap<String,TreeMap<Long,Student>> index;
 	
 	// CONSTRUCTOR
-	public StudentsIndexByName(){
+	public StudentIndexByName(){
 		index = new TreeMap<String,TreeMap<Long,Student>>();
 	}
 	

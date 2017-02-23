@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
-import com.server.data.StudentsIndexByName;
+import com.server.data.StudentIndexByName;
 import com.server.data.StudentCatalogs;
 
 public class BasicStudentSearchService implements StudentSearchService {
@@ -19,7 +19,7 @@ public class BasicStudentSearchService implements StudentSearchService {
 	private final NameComparator STUDENT_NAME_COMPARATOR = new NameComparator();
 	
 	@Override
-	public Collection<Student> searchByName(String name, StudentsIndexByName studentsByName) {
+	public Collection<Student> searchByName(String name, StudentIndexByName studentsByName) {
 		
 		TreeMap<Long,Student> studentsTree = (TreeMap<Long, Student>) studentsByName.get(name);
 		List<Student> students = new ArrayList<Student>(studentsTree.values());

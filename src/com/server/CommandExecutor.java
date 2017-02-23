@@ -7,10 +7,13 @@ import com.exceptions.BadRequestException;
 import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
-import com.server.data.Consumer;
 import com.server.data.DataService;
-import com.server.data.StudentsIndexByName;
+import com.server.data.FileDataServiceBuilder;
+import com.server.data.IDataServiceBuilder;
 import com.server.data.StudentCatalogs;
+import com.server.data.StudentIndexByName;
+import com.server.search.BasicStudentSearchServiceBuilder;
+import com.server.search.IStudentSearchServiceBuilder;
 import com.server.search.StudentSearchService;
 
 /**
@@ -27,7 +30,7 @@ import com.server.search.StudentSearchService;
  * @author Daniel Echalar
  *
  */
-public class CommandExecutor implements Consumer {
+public class CommandExecutor{
 
 	// CONSTANTS
 	private final String FILENAME = "input.csv";
@@ -35,12 +38,17 @@ public class CommandExecutor implements Consumer {
 	// PROPERTIES
 	private DataService dataService;
 	
-	private StudentSearchService searchService;
+	private StudentSearchService studentSearchService;
 
 	// CONSTRUCTOR
-	public CommandExecutor(DataService dataService) {
-	
-		this.dataService = dataService;
+	public CommandExecutor() {
+		
+		IDataServiceBuilder dataServiceBuilder = new FileDataServiceBuilder();
+		dataService = dataServiceBuilder.getResult();
+		
+		IStudentSearchServiceBuilder studentSearchServiceBuilder = new BasicStudentSearchServiceBuilder();   
+		studentSearchService = studentSearchServiceBuilder.getResult();
+		
 		boolean dataLoaded = this.dataService.load(FILENAME);
 		System.out.println("load data: " + dataLoaded);
 	}
@@ -60,7 +68,9 @@ public class CommandExecutor implements Consumer {
 		
 		try {
 			cmd = parseCommand(command);
-			
+			if(cmd==null){
+				return "Command not found";
+			}
 			switch(cmd){
 				case CREATE:
 					res = executeCreateStudent(cmd);
@@ -94,7 +104,9 @@ public class CommandExecutor implements Consumer {
 			
 		} catch (BadRequestException be) {
 			return be.getMessage();
-		}	
+		} catch (Exception e) {
+			return e.getMessage();
+		}		
 	}
 
 	/**
@@ -230,7 +242,7 @@ public class CommandExecutor implements Consumer {
 			Collection<Student> students = processSearchByName(name, 
 					dataService.getStudentsByName());
 			
-			if (students == null) {
+			if (students == null || students.isEmpty()) {
 				return "Student not found";
 			} else {
 				return students.toString();
@@ -390,44 +402,41 @@ public class CommandExecutor implements Consumer {
 		}
 	}
 
-	@Override
 	public Student processSave(Student student) {
 		return dataService.save(student);
 	}
 
-	@Override
 	public void processDelete(Long id) {
 		dataService.delete(id);
 	}
 
-	@Override
 	public Student processUpdate(Student student) {
 		return dataService.update(student);
 	}
 
 	public void setStudentSearchService(StudentSearchService sss) {
-		this.searchService = sss;
+		this.studentSearchService = sss;
 	}
 
 	public Collection<Student> processSearchByName(
 			String name, 
-			StudentsIndexByName studentsByName) {
+			StudentIndexByName studentsByName) {
 		
-		return searchService.searchByName(name, studentsByName);
+		return studentSearchService.searchByName(name, studentsByName);
 	}
 
 	public Collection<Student> processSearchByGender(
 			Gender gender,
 			StudentCatalogs<Gender> studentsByGender) {
 		
-		return searchService.searchByGender(gender, studentsByGender);
+		return studentSearchService.searchByGender(gender, studentsByGender);
 	}
 
 	public Collection<Student> processSearchByType(
 			Type type,
 			StudentCatalogs<Type> studentsByTypes) {
 		
-		return searchService.searchByType(type, studentsByTypes);
+		return studentSearchService.searchByType(type, studentsByTypes);
 	}
 
 	public Collection<Student> processSearchByTypeAndGender(
@@ -435,7 +444,7 @@ public class CommandExecutor implements Consumer {
 			Gender gender, StudentCatalogs<Type> studentsByTypes,
 			StudentCatalogs<Gender> studentsByGender) {
 
-		return searchService.searchByTypeAndGender(
+		return studentSearchService.searchByTypeAndGender(
 				type,
 				gender,
 				studentsByTypes,

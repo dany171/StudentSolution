@@ -22,7 +22,7 @@ public class Client {
 	// CONSTANTS
 	private static final int PORT = 6789;
 	
-	private static final String REMOVE_UNWANTED_SYMBOLS = "[ \\[\\],]";
+	private static final String REMOVE_UNWANTED_SYMBOLS = "[\\[\\],]";
 
 	// PROPERTIES
 	private static String host = "localhost";
