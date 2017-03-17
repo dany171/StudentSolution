@@ -16,6 +16,7 @@ import java.net.Socket;
  */
 public class Server {
 	
+	
 	// CONSTANTS
 	private static final int SERVER_PORT = 6789;
 	
@@ -24,7 +25,7 @@ public class Server {
 	
 	public static void main(String[] args) throws IOException {
 		{
-			CommandExecutor executor = new CommandExecutor();
+			CommandManager executor = new CommandManager();
 			
 			String clientCommand;
 			ServerSocket clientSocket = new ServerSocket(SERVER_PORT);

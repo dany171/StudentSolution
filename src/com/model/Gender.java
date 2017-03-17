@@ -25,14 +25,14 @@ public enum Gender {
 	 */
 	public static Gender getGender(String gender) {
 
-		if (gender.equalsIgnoreCase("male") 
-				|| gender.equalsIgnoreCase("m")) {
+		if ("male".equalsIgnoreCase(gender) 
+				|| "m".equalsIgnoreCase(gender)) {
 			
 			return MALE;
 		}
 
-		if (gender.equalsIgnoreCase("female")
-				|| gender.equalsIgnoreCase("f")) {
+		if ("female".equalsIgnoreCase(gender)
+				|| "f".equalsIgnoreCase(gender)) {
 			return FEMALE;
 		}
 

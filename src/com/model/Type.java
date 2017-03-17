@@ -32,22 +32,21 @@ public enum Type {
 	 */
 	public static Type getType(String type) {
 
-		if (type.equalsIgnoreCase("kindergarden")) {
+		if ("kindergarden".equalsIgnoreCase(type)) {
 			return KINDERGARDEN;
 		}
 
-		if (type.equalsIgnoreCase("highschool")) {
+		if ("highschool".equalsIgnoreCase(type)) {
 			return HIGHSCHOOL;
 		}
 
-		if (type.equalsIgnoreCase("university")) {
+		if ("university".equalsIgnoreCase(type)) {
 			return UNIVERSITY;
 		}
 
-		if (type.equalsIgnoreCase("elementary")) {
+		if ("elementary".equalsIgnoreCase(type)) {
 			return ELEMENTARY;
 		}
-
 		return null;
 	}
 }

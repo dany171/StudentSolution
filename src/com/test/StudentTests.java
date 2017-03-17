@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
+import com.server.data.DataService;
+import com.server.data.FileDataService;
 import com.server.data.StudentCatalogs;
 import com.server.data.StudentIndexByName;
 import com.server.search.BasicStudentSearchService;
@@ -22,12 +24,14 @@ public class StudentTests extends TestCase {
 	final String lexic = "abcdefghijklmnopqrstuvwxyz";
 	final java.util.Random rand = new java.util.Random();
 	final Set<String> identifiers = new HashSet<String>();
-    final BasicStudentSearchService searchService = new BasicStudentSearchService(); 
-    
+    final BasicStudentSearchService searchService = new BasicStudentSearchService();
+
     StudentIndexByName index;
     StudentCatalogs<Gender> studentsByGender;
     StudentCatalogs<Type> studentsByType;
     Student studentToSearch;
+    
+    DataService dataService = new FileDataService();
     
     int maleCounter;
     int kindergardenCounter;
@@ -116,14 +120,14 @@ public class StudentTests extends TestCase {
 		    }
 		    return builder.toString();
 	}
-	
+	/*
 	@Test
 	public void testSearchByName() {
 		System.out.println("---testSearchByName");
 		System.out.println("Name to Search :"+studentToSearch.getName());
 		
 		Date start = new Date();
-		Collection<Student> res = searchService.searchByName(studentToSearch.getName(), index);
+		Collection<Student> res = searchService.search(studentToSearch.getName(), dataService);
 		Date end = new Date();
 		
 		long diffInMilliseconds = end.getTime()-start.getTime();
@@ -213,5 +217,5 @@ public class StudentTests extends TestCase {
 				this.kindergardenAndMaleCounter);
 		
 		System.out.println("Found in "+diffInMilliseconds+" milliseconds");
-	}
+	}*/
 }
