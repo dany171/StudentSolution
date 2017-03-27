@@ -21,7 +21,6 @@ public abstract class Command<T> {
 			int firstOptionIndex = input.indexOf(" ") + 1;
 			String optionsText = input.substring(firstOptionIndex);
 			
-			//text = optionsText.replaceAll(tokens[0], "");
 			String[] opts = optionsText.split(" ");
 
 			options = new HashMap<String, String>();
