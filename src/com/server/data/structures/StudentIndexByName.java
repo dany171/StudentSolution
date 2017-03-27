@@ -1,4 +1,4 @@
-package com.server.data;
+package com.server.data.structures;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,15 +18,12 @@ import com.model.Student;
  */
 public class StudentIndexByName {
 
-	// PROPERTIES
 	public TreeMap<String,TreeMap<Long,Student>> index;
 	
-	// CONSTRUCTOR
 	public StudentIndexByName(){
 		index = new TreeMap<String,TreeMap<Long,Student>>();
 	}
 	
-	//METHODS
 	/**
 	 * Puts a student in index
 	 * 
@@ -42,13 +39,11 @@ public class StudentIndexByName {
 		
 		for(int i=1; i<=name.length(); i++){
 			String sub = name.substring(0,i);
-			
 			TreeMap<Long,Student> indexValue = index.get(sub);
 			
 			if(indexValue==null){
 				indexValue = new TreeMap<Long,Student>();
 			}
-			
 			indexValue.put(student.getId(), student);
 			index.put(sub, indexValue);
 			
@@ -64,7 +59,6 @@ public class StudentIndexByName {
 	 * the map is empty if no students found with that name
 	 */
 	public Map<Long,Student> get(String name){
-		
 		Collection<String> indexes = index.keySet();
 		TreeMap<Long,Student> res = new TreeMap<Long,Student>();
 		
@@ -96,7 +90,6 @@ public class StudentIndexByName {
 	 * @param student the student to remove
 	 */
 	public void remove(Student student){
-		
 		String name = student.getName();
 		for(int i=1; i<name.length(); i++){
 			

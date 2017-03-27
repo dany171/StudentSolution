@@ -6,7 +6,7 @@ import com.model.Student;
 import com.model.Type;
 import com.server.data.DataService;
 
-public class EditCommand extends CommandStrategy<Student>{
+public class EditCommand extends Command<Student>{
 
 	DataService dataService;
 	Student student;

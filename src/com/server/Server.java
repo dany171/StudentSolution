@@ -6,21 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-/**
- * Represents the server.
- * 
- * This receives client's socket connections and answers them.
- * 
- * @author Daniel Echalar
- *
- */
+
 public class Server {
 	
-	
-	// CONSTANTS
 	private static final int SERVER_PORT = 6789;
-	
-	// STATICS
 	private static boolean active = true;
 	
 	public static void main(String[] args) throws IOException {

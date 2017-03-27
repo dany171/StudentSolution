@@ -1,12 +1,5 @@
 package com.exceptions;
 
-/**
- * Represents a exception regarding command,
- * CRUD, or search processes
- * 
- * @author Daniel Echalar
- *
- */
 public class BadRequestException extends Exception {
 
 	private static final long serialVersionUID = 1L;
@@ -24,5 +17,4 @@ public class BadRequestException extends Exception {
 	public BadRequestException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
 }

@@ -4,16 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.exceptions.BadRequestException;
-import com.model.Student;
 
-public abstract class CommandStrategy<T> {
+public abstract class Command<T> {
 
 	protected String name;
 	protected Map<String,String> options;
 	
 	public abstract Result<T> execute();
 	
-	public CommandStrategy(String input) throws BadRequestException {
+	public Command(String input) throws BadRequestException {
 		try {
 			
 			String[] tokens = input.split(" ");
@@ -35,6 +34,4 @@ public abstract class CommandStrategy<T> {
 			throw new BadRequestException("Error while parsing",e);
 		}
 	}
-	
-	
 }

@@ -3,7 +3,7 @@ package command;
 import com.exceptions.BadRequestException;
 import com.server.data.DataService;
 
-public class DeleteCommand extends CommandStrategy<Boolean>{
+public class DeleteCommand extends Command<Boolean>{
 
 	private DataService dataService;
 	private Long studentId;

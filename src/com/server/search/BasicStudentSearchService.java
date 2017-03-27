@@ -7,17 +7,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.exceptions.BadRequestException;
 import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
 import com.server.data.DataService;
-import com.server.data.StudentIndexByName;
-import com.server.data.StudentCatalogs;
+import com.server.data.structures.StudentCatalogs;
+import com.server.data.structures.StudentIndexByName;
 
 public class BasicStudentSearchService implements StudentSearchService {
 	
-	// CONSTANTS
 	private final NameComparator STUDENT_NAME_COMPARATOR = new NameComparator();
 	
 	@Override

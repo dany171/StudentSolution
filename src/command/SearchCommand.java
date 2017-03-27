@@ -10,7 +10,7 @@ import com.server.data.DataService;
 import com.server.search.Criteria;
 import com.server.search.StudentSearchService;
 
-public class SearchCommand extends CommandStrategy<Collection<Student>>{
+public class SearchCommand extends Command<Collection<Student>>{
 
 	private StudentSearchService studentSearchService;
 	private DataService dataService;

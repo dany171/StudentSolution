@@ -1,4 +1,4 @@
-package com.server.data;
+package com.server.data.structures;
 
 import java.util.Collection;
 import java.util.HashMap;

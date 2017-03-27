@@ -4,30 +4,17 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Represents an student.
- * 
- * @author Daniel Echalar
- * 
- */
 public class Student implements Comparable<Student> {
 
-	// STATICS
 	private static DateFormat dateFormatter = new SimpleDateFormat(
 			"yyyyMMddHHmmss");
 
-	// PROPERTIES
 	private Long id;
-
 	private String name;
-
 	private Gender gender;
-
 	private Type type;
-
 	private Long timestamp;
 
-	// METHODS
 	public String getName() {
 		return name;
 	}
@@ -75,7 +62,6 @@ public class Student implements Comparable<Student> {
 
 	@Override
 	public String toString() {
-		
 		Date ts = new Date(timestamp);
 		String formattedTs = Student.dateFormatter.format(ts);
 		

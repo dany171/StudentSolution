@@ -18,14 +18,11 @@ import command.SearchCommand;
 
 public class CommandManager{
 
-	// CONSTANTS
 	private final String FILENAME = "input.csv";
 
-	// PROPERTIES
 	private DataService dataService;
 	private StudentSearchService studentSearchService;
 	
-	// CONSTRUCTOR
 	public CommandManager() {
 		
 		IDataServiceBuilder dataServiceBuilder = new FileDataServiceBuilder();
@@ -38,7 +35,6 @@ public class CommandManager{
 		System.out.println("load data: " + dataLoaded);
 	}
 
-	// METHODS
 	public String execute(String text) {
 
 		String res = "";
@@ -55,7 +51,7 @@ public class CommandManager{
 			case "UPDATE":
 				EditCommand editCommand = new EditCommand(dataService, text);
 				Result<Student> editResult = editCommand.execute();
-				res = "edited: "+editCommand.toString();
+				res = "edited: "+editResult.toString();
 				break;
 			case "DELETE":
 				DeleteCommand deleteCommand = new DeleteCommand(dataService, text);
@@ -82,12 +78,10 @@ public class CommandManager{
 			return e.getMessage();
 		}		
 	}
-
 	
 	public String executeExit(boolean persist) {
 
 		if (persist) {
-			
 			boolean exitSuccess = processExit(FILENAME);
 
 			if (exitSuccess) {

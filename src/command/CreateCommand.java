@@ -5,7 +5,7 @@ import com.model.Gender;
 import com.model.Student;
 import com.model.Type;
 import com.server.data.DataService;
-public class CreateCommand extends CommandStrategy<Student>{
+public class CreateCommand extends Command<Student>{
 	
 	DataService dataService;
 	Student student;
