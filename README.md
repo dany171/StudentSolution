@@ -43,6 +43,7 @@ Requirements:
 Java 7
 
 The solution has a client-server architecture. 
+Searching feature test over 50000 records, response time 25ms. TODO: Add stress test to verify this.
 
 How to use:
 
